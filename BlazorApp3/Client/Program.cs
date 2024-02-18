@@ -1,4 +1,5 @@
 using BlazorApp3;
+using BlazorApp3.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -13,6 +14,8 @@ namespace BlazorApp3
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+            builder.Services.AddScoped<IndexedDbAccessor>();
 
             await builder.Build().RunAsync();
         }
