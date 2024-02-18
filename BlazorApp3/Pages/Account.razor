@@ -1,0 +1,39 @@
+﻿@page "/account"
+@using System.Text.Json;
+@inject IndexedDbAccessor IndexedDbAccessor
+
+<PageTitle>Account</PageTitle>
+
+<h3>Account</h3>
+
+@if (!isConfigured)
+{
+    <p>Please login</p>
+    <form>
+        <input type="text" @bind-value="accessKey" />
+
+        <button type="button" @onclick="SetValueAsync">Set Value</button>
+    </form>
+}
+else
+{
+    <p>Logged in</p>
+}
+
+@code {
+    private bool isConfigured;
+    public string accessKey { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isConfigured = await IndexedDbAccessor.CheckKeyExistsAsync("configuration", 1);
+    }
+
+    public async Task SetValueAsync()
+    {
+        await IndexedDbAccessor.SetValueAsync("configuration", new { Id = 1, Name = accessKey });
+
+        isConfigured = await IndexedDbAccessor.CheckKeyExistsAsync("configuration", 1);
+    }
+
+}

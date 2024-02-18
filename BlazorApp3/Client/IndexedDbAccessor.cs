@@ -29,9 +29,36 @@ namespace BlazorApp3.Client
             }
         }
 
-        public ValueTask DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
-            throw new NotImplementedException();
+            if (_jSObjectReference.IsValueCreated)
+            {
+                await _jSObjectReference.Value.DisposeAsync();
+            }
+        }
+
+        public async Task<T> GetValueAsync<T>(string collectionName, int id)
+        {
+            await WaitForReference();
+
+            var result = await _jSObjectReference.Value.InvokeAsync<T>("pull", collectionName, id);
+
+            return result;
+        }
+
+        public async Task SetValueAsync<T>(string collectionName, T valuName)
+        {
+            await WaitForReference();
+            await _jSObjectReference.Value.InvokeVoidAsync("put", collectionName, valuName);
+        }
+
+        public async Task<bool> CheckKeyExistsAsync(string collectionName, int id)
+        {
+            await WaitForReference();
+
+            var result = await _jSObjectReference.Value.InvokeAsync<bool>("hasKey", collectionName, id);
+
+            return result;
         }
     }
 }
