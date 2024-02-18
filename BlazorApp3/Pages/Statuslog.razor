@@ -1,0 +1,49 @@
+﻿@page "/statuslog"
+@inject HttpClient Http
+
+<PageTitle>Statuslog</PageTitle>
+
+<h3>Statuslog</h3>
+
+@if (statuses == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    foreach(var status in statuses)
+    {
+        <p>
+            <span>@status.emoji</span> @status.content by <strong>@status.address</strong>
+        </p>
+    }
+}
+
+@code {
+    private Status[]? statuses;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var api = await Http.GetFromJsonAsync<StatusLogApi>("https://api.omg.lol/statuslog/latest");
+
+        statuses = api.response?.statuses;
+    }
+
+    public class StatusLogApi
+    {
+        public StatusResponse response { get; set; }
+    }
+
+    public class StatusResponse
+    {
+        public Status[] statuses { get; set; }
+    }
+
+    public class Status
+    {
+        public string id { get; set; }
+        public string address { get; set; }
+        public string emoji { get; set; }
+        public string content { get; set; }
+    }
+}
